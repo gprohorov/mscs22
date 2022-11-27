@@ -16,6 +16,7 @@ public class CheatCheckerService {
 
     public boolean isCheater(Integer id){
     log.info("Checking {} id", id);
-        return false;
+
+        return id < 5;
     }
 }
