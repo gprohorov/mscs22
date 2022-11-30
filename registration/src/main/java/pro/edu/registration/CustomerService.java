@@ -10,14 +10,31 @@ package pro.edu.registration;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
 
 @Slf4j
 @Service
 public class CustomerService {
 
     @Autowired
+    CustomerRepository repository;
+
+    @Autowired
     RestTemplate restTemplate;
+
+    @PostConstruct
+    void init(){
+        Customer customer = Customer.builder()
+                .id(2)
+                .firstName("John")
+                .lastName("Lennon")
+                .email("john@beatles.com")
+                .build();
+        repository.save(customer);
+    }
 
     public void registerOne(CustomerRegistrationRequest request){
         Customer customer = Customer.builder()
@@ -25,11 +42,11 @@ public class CustomerService {
                 .lastName(request.lastName())
                 .email(request.email())
                 .build();
-        log.info("Customer {} has been registered", customer.getFirstName());
 
         //TODO: check email if exist
         // TODO: save to DB
-        customer.setId(7);
+        this.save(customer);
+        log.info("Customer {} has been registered", customer);
         // TODO: check cheat
         CheatCheckerResponse response = restTemplate
                 .getForObject(
@@ -43,5 +60,15 @@ public class CustomerService {
             log.info("Good man");
         }
 
+    }
+    public Customer save(Customer customer){
+        Integer id = repository
+                .findAll()
+                .stream()
+                .mapToInt(Customer::getId)
+                .max()
+                .orElse(0) + 1;
+        customer.setId(id);
+        return repository.save(customer);
     }
 }

@@ -4,5 +4,11 @@ server:
 spring:
   application:
     name: registration
+  data:
+    mongodb:
+      database: mscs22_db
+      port: 27018
+      host: localhost
+
 
 
